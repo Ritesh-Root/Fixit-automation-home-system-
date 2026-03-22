@@ -247,6 +247,156 @@ const QUICK_ACTIONS = [
   { label: "Fix my washer", icon: "kitchen" },
 ];
 
+// ─── Demo Responses ─────────────────────────────────────────────
+// Pre-scripted responses so the demo works without a backend
+
+type DemoStep = {
+  response: string;
+  vendors?: Vendor[];
+  booking?: BookingData | null;
+  payment?: PaymentData | null;
+  toolCalls?: ToolCall[];
+};
+
+const DEMO_SCRIPTS: Record<string, DemoStep[]> = {
+  "fix my ac": [
+    {
+      response:
+        "I found 3 top-rated AC repair technicians near you in San Francisco. They're all available today — let me know which one you'd like to book!",
+      toolCalls: [
+        { tool_name: "search_vendors", input_summary: "AC repair, San Francisco", result_summary: "3 vendors found", duration_ms: 312 },
+        { tool_name: "check_availability", input_summary: "today slots", result_summary: "all available", duration_ms: 188 },
+      ],
+      vendors: [
+        { vendor_id: "v1", name: "CoolBreeze AC Pros", rating: 4.9, total_reviews: 312, price_range: "$80–$150/hr", specialties: ["AC repair", "HVAC install", "Duct cleaning", "Refrigerant recharge"], response_time_minutes: 15, city: "San Francisco" },
+        { vendor_id: "v2", name: "AirFix Elite", rating: 4.7, total_reviews: 198, price_range: "$70–$130/hr", specialties: ["Central AC", "Split units", "Emergency repair"], response_time_minutes: 22, city: "San Francisco" },
+        { vendor_id: "v3", name: "TechChill HVAC", rating: 4.8, total_reviews: 245, price_range: "$90–$160/hr", specialties: ["AC diagnostics", "Compressor repair", "Smart thermostats"], response_time_minutes: 30, city: "San Francisco" },
+      ],
+    },
+    {
+      response:
+        "Great choice! I've booked CoolBreeze AC Pros for you this afternoon. Your technician Marco will arrive between 2–4 PM. Confirmation sent to your phone!",
+      toolCalls: [
+        { tool_name: "create_booking", input_summary: "CoolBreeze AC Pros, today 2-4PM", result_summary: "Booking confirmed #FX-2847", duration_ms: 421 },
+        { tool_name: "send_notification", input_summary: "SMS confirmation", result_summary: "Sent", duration_ms: 95 },
+      ],
+      booking: {
+        booking_id: "b1",
+        confirmation_code: "FX-2847",
+        vendor_name: "CoolBreeze AC Pros",
+        date: "Today, March 22",
+        time_slot: "2:00 PM – 4:00 PM",
+        estimated_cost: 120,
+        status: "confirmed",
+        eta_minutes: 45,
+      },
+    },
+    {
+      response:
+        "Payment of $120 has been processed successfully. You'll receive a receipt via email. Is there anything else I can help you with?",
+      toolCalls: [
+        { tool_name: "process_payment", input_summary: "$120 deposit", result_summary: "Payment authorized", duration_ms: 287 },
+      ],
+      payment: { payment_id: "p1", amount: 120.00, payment_type: "deposit", status: "completed", message: "Payment processed successfully" },
+    },
+  ],
+  "book a plumber": [
+    {
+      response:
+        "Found 3 licensed plumbers available in your area. All are background-checked and insured!",
+      toolCalls: [
+        { tool_name: "search_vendors", input_summary: "plumber, licensed, San Francisco", result_summary: "3 vendors found", duration_ms: 298 },
+      ],
+      vendors: [
+        { vendor_id: "v4", name: "FlowMaster Plumbing", rating: 4.9, total_reviews: 487, price_range: "$85–$160/hr", specialties: ["Pipe repair", "Drain cleaning", "Water heater", "Leak detection"], response_time_minutes: 20, city: "San Francisco" },
+        { vendor_id: "v5", name: "QuickFix Plumbers", rating: 4.6, total_reviews: 203, price_range: "$75–$140/hr", specialties: ["Emergency plumbing", "Toilet repair", "Faucet install"], response_time_minutes: 18, city: "San Francisco" },
+        { vendor_id: "v6", name: "PipePro Solutions", rating: 4.8, total_reviews: 356, price_range: "$90–$170/hr", specialties: ["Sewer lines", "Re-piping", "Commercial plumbing"], response_time_minutes: 35, city: "San Francisco" },
+      ],
+    },
+    {
+      response: "FlowMaster Plumbing is booked! Jake will arrive tomorrow between 9–11 AM. They have a 5-star leak repair record.",
+      toolCalls: [
+        { tool_name: "create_booking", input_summary: "FlowMaster, tomorrow 9-11AM", result_summary: "Booking #FX-3190 confirmed", duration_ms: 389 },
+      ],
+      booking: { booking_id: "b2", confirmation_code: "FX-3190", vendor_name: "FlowMaster Plumbing", date: "Tomorrow, March 23", time_slot: "9:00 AM – 11:00 AM", estimated_cost: 95, status: "confirmed" },
+    },
+  ],
+  "electrician needed": [
+    {
+      response:
+        "I found certified electricians near you. All are licensed and have completed safety certifications. Here are the top picks:",
+      toolCalls: [
+        { tool_name: "search_vendors", input_summary: "electrician, certified, San Francisco", result_summary: "3 vendors found", duration_ms: 267 },
+        { tool_name: "verify_licenses", input_summary: "license check", result_summary: "All verified", duration_ms: 143 },
+      ],
+      vendors: [
+        { vendor_id: "v7", name: "Sparks Electric Co.", rating: 4.9, total_reviews: 521, price_range: "$95–$180/hr", specialties: ["Panel upgrades", "EV charger install", "Rewiring", "Safety inspection"], response_time_minutes: 25, city: "San Francisco" },
+        { vendor_id: "v8", name: "VoltPro Electricians", rating: 4.7, total_reviews: 289, price_range: "$80–$155/hr", specialties: ["Outlet install", "Circuit breaker", "Smart home wiring"], response_time_minutes: 30, city: "San Francisco" },
+        { vendor_id: "v9", name: "PowerGrid Services", rating: 4.8, total_reviews: 412, price_range: "$100–$190/hr", specialties: ["Commercial electrical", "Generator install", "Emergency service"], response_time_minutes: 20, city: "San Francisco" },
+      ],
+    },
+  ],
+  "deep clean my house": [
+    {
+      response:
+        "Here are the best deep cleaning services in your area — all eco-friendly and 5-star rated!",
+      toolCalls: [
+        { tool_name: "search_vendors", input_summary: "deep cleaning, eco-friendly", result_summary: "3 vendors found", duration_ms: 234 },
+      ],
+      vendors: [
+        { vendor_id: "v10", name: "SparkleClean Pro", rating: 4.9, total_reviews: 678, price_range: "$150–$350/visit", specialties: ["Deep clean", "Move-out clean", "Eco products", "Same-day service"], response_time_minutes: 10, city: "San Francisco" },
+        { vendor_id: "v11", name: "CleanSweep SF", rating: 4.8, total_reviews: 445, price_range: "$120–$280/visit", specialties: ["Apartment cleaning", "Office cleaning", "Window cleaning"], response_time_minutes: 15, city: "San Francisco" },
+        { vendor_id: "v12", name: "GreenMaid Services", rating: 4.7, total_reviews: 312, price_range: "$130–$300/visit", specialties: ["Green cleaning", "Recurring service", "Organizing"], response_time_minutes: 20, city: "San Francisco" },
+      ],
+    },
+  ],
+  "pest problem": [
+    {
+      response:
+        "Got it! I found licensed pest control specialists. They'll identify the pest and create a custom treatment plan.",
+      toolCalls: [
+        { tool_name: "search_vendors", input_summary: "pest control, licensed", result_summary: "3 vendors found", duration_ms: 256 },
+      ],
+      vendors: [
+        { vendor_id: "v13", name: "BugBusters SF", rating: 4.8, total_reviews: 389, price_range: "$120–$250/visit", specialties: ["Rodent control", "Termite treatment", "Ant removal", "Cockroach extermination"], response_time_minutes: 30, city: "San Francisco" },
+        { vendor_id: "v14", name: "EcoPest Solutions", rating: 4.9, total_reviews: 267, price_range: "$140–$300/visit", specialties: ["Organic treatments", "Bed bug removal", "Wasp nests"], response_time_minutes: 25, city: "San Francisco" },
+      ],
+    },
+  ],
+  "fix my washer": [
+    {
+      response:
+        "Found appliance repair experts who specialize in washing machines. Most issues are fixed same-day!",
+      toolCalls: [
+        { tool_name: "search_vendors", input_summary: "appliance repair, washer, same-day", result_summary: "3 vendors found", duration_ms: 278 },
+      ],
+      vendors: [
+        { vendor_id: "v15", name: "AppliancePro SF", rating: 4.9, total_reviews: 534, price_range: "$75–$150/hr", specialties: ["Washer repair", "Dryer repair", "Dishwasher", "All brands"], response_time_minutes: 20, city: "San Francisco" },
+        { vendor_id: "v16", name: "FixRight Appliances", rating: 4.7, total_reviews: 298, price_range: "$65–$130/hr", specialties: ["Samsung", "LG", "Whirlpool", "Bosch"], response_time_minutes: 35, city: "San Francisco" },
+      ],
+    },
+  ],
+};
+
+// Tracks which step of each demo script we're on
+const demoStepState: Record<string, number> = {};
+
+function getDemoResponse(message: string): DemoStep | null {
+  const key = message.toLowerCase().trim();
+  const script = DEMO_SCRIPTS[key];
+  if (!script) return null;
+  const step = demoStepState[key] ?? 0;
+  demoStepState[key] = (step + 1) % script.length;
+  return script[step];
+}
+
+// Follow-up message responses for demo flow
+const FOLLOW_UP_RESPONSES: Record<string, string> = {
+  thanks: "You're welcome! Your booking is all set. Let me know if you need anything else.",
+  "thank you": "Happy to help! Your service is confirmed. Anything else I can fix for you?",
+  "how does it work": "Just describe your home problem and I'll search nearby verified pros, show you top options with pricing, and handle the full booking and payment — all in one chat!",
+};
+
 // ─── Chat Content Component ───────────────────────────────────
 
 function ChatContent() {
@@ -280,23 +430,48 @@ function ChatContent() {
     setIsLoading(true);
 
     try {
-      const response: ChatResponse = await sendMessage({
-        message: msg,
-        user_id: "demo-user",
-        history: history,
-      });
+      // Try demo response first (works without backend)
+      const demo = getDemoResponse(msg)
+        ?? (FOLLOW_UP_RESPONSES[msg.toLowerCase().trim()]
+          ? { response: FOLLOW_UP_RESPONSES[msg.toLowerCase().trim()] }
+          : null);
 
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: response.response,
-        vendors: response.vendor_list || undefined,
-        booking: response.booking,
-        payment: response.payment,
-        toolCalls: response.tool_calls,
-      };
+      if (demo) {
+        // Simulate network delay for realism
+        await new Promise((r) => setTimeout(r, 900 + Math.random() * 600));
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: demo.response,
+          vendors: demo.vendors,
+          booking: demo.booking,
+          payment: demo.payment,
+          toolCalls: demo.toolCalls,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        setHistory((prev) => [
+          ...prev,
+          { role: "user", content: msg },
+          { role: "assistant", content: demo.response },
+        ]);
+      } else {
+        const response: ChatResponse = await sendMessage({
+          message: msg,
+          user_id: "demo-user",
+          history: history,
+        });
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setHistory(response.history);
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: response.response,
+          vendors: response.vendor_list || undefined,
+          booking: response.booking,
+          payment: response.payment,
+          toolCalls: response.tool_calls,
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setHistory(response.history);
+      }
     } catch (error) {
       const errorMessage: Message = {
         role: "assistant",

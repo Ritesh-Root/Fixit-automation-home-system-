@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(curl -s http://localhost:3000 -o /dev/null -w \"%{http_code}\")",
+      "Bash(mkdir -p \"c:\\\\devpost hackathon\\\\demo-video\")",
+      "Bash(node record-demo.mjs)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright:*)"
+    ]
+  }
+}

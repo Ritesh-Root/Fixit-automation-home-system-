@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/Users/rishi/AppData/Local/ms-playwright/ffmpeg-1011/ffmpeg-win64.exe\" -i \"c:\\\\devpost hackathon\\\\demo-video\\\\fixit-demo.webm\" -c:v libx264 -crf 18 -preset fast -pix_fmt yuv420p \"c:\\\\devpost hackathon\\\\demo-video\\\\fixit-demo.mp4\")"
+    ]
+  }
+}
